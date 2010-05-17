@@ -25,4 +25,4 @@ log
 ## PROJECT::SPECIFIC
 vendor
 .bundle
-
+.rvmrc
