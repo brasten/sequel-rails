@@ -1,0 +1,1 @@
+require 'sequel-rails/railtie'
