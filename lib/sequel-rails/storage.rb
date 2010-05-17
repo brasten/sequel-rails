@@ -25,7 +25,6 @@ module Rails
       end
 
       def self.new(config)
-        puts "config == #{config.inspect}"
         klass = lookup_class(config['adapter'])
         if klass.equal?(self)
           super(config)

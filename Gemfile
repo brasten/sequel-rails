@@ -19,4 +19,5 @@ gem 'sequel',              '~> 3.10.0'#, :git => "#{sequel}/sequel.git"
 group :test do
   gem 'rspec'
   gem 'autotest'
+  gem 'rcov'
 end

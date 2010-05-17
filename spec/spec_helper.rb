@@ -14,8 +14,8 @@ $LOAD_PATH.unshift(File.expand_path('../../lib', __FILE__))
 
 require 'sequel-rails'
 
-require 'rspec'
-require 'rspec/autorun'
+require 'spec'
+require 'spec/autorun'
 
-Rspec.configure do |config|
+Spec::Runner.configure do |config|
 end
