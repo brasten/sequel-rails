@@ -14,8 +14,9 @@ git 'git://github.com/rails/rails.git' do
 
 end
 
-gem 'sequel',              '~> 3.11.0', :git => "#{sequel}/sequel.git"
+gem 'sequel',              '~> 3.10.0'#, :git => "#{sequel}/sequel.git"
 
 group :test do
-  gem 'rspec', '2.0.0.beta.8'
+  gem 'rspec'
+  gem 'autotest'
 end
