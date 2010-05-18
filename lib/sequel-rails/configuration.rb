@@ -14,6 +14,7 @@ module Rails
 
       attr_reader :root, :raw
       attr_accessor :logger
+      attr_accessor :migration_dir
 
       def environments
         @environments ||= @raw.inject({}) do |normalized, environment|
@@ -44,7 +45,6 @@ module Rails
             end
         end
         
-        puts "normalized config == #{config.inspect}"
         config
       end
 

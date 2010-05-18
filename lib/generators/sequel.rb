@@ -10,13 +10,13 @@ module Sequel
       include ::Rails::Generators::Migration
 
       def self.source_root
-        @_datamapper_source_root ||=
+        @_sequel_source_root ||=
         File.expand_path("../#{base_name}/#{generator_name}/templates", __FILE__)
       end
 
       protected
 
-      # Datamapper does not care if migrations have the same name as long as
+      # Sequel does not care if migrations have the same name as long as
       # they have different ids.
       #
       def migration_exists?(dirname, file_name) #:nodoc:

@@ -1,257 +1,33 @@
 = sequel-rails
 
-This gem provides the railtie that allows {datamapper}[http://github.com/datamapper/dm-core] to hook into {rails3}[http://github.com/rails/rails] and thus behave like a rails framework component. Just like activercord does in rails, {sequel-rails}[http://github.com/datamapper/sequel-rails] uses the railtie API to hook into rails. The two are actually hooked into rails almost identically.
+This gem provides the railtie that allows {sequel}[http://github.com/jeremyevans/sequel] to hook into {rails3}[http://github.com/rails/rails] and thus behave like a rails framework component. Just like activerecord does in rails, {sequel-rails}[http://github.com/brasten/sequel-rails] uses the railtie API to hook into rails. The two are actually hooked into rails almost identically.
 
-Creating new datamapper apps on rails3 from scratch is actually really easy. Like, *really* easy. The following will guide you through the process.
+The code for this gem was initially taken from the excellent {dm-rails}[http://github.com/datamapper/dm-rails] project.
 
-== Generating a new application from scratch
+== Using sequel-rails
 
-It's really easy to go from zero gems to a working rails3 app using datamapper. All you need is the latest {rubygems}[http://docs.rubygems.org/read/chapter/3] release and {rails}[http://github.com/rails/rails]
+Using sequel with rails3 requires a couple minor changes.
 
-  gem update —system # you will need rubygems-1.3.6 for the command below to work
-  gem install rails --pre
+First, add the following to your Gemfile:
 
-Once you have {rails}[http://github.com/rails/rails] and thus {bundler}[http://github.com/carlhuda/bundler] installed, you can bootstrap a rails master branch application with a single command. Yes! A single command. Cool.
+  gem 'sequel-rails'
+  
+... be sure to run "bundle install" if needed!
 
-  rails dm_rails3_app -m http://github.com/snusnu/rails-templates/raw/master/dm_rails_master.rb
+Secondly, you'll need to require "sequel-rails/railtie" in your config/application.rb file, and not require activerecord.  The top of your config/application.rb will probably look something like:
+  
+  # require 'rails/all'
+  
+  # Instead of 'rails/all', require these:
+  require "action_controller/railtie"
+  require "sequel-rails/railtie"
+  require "action_mailer/railtie"
 
-Now that was easy! Follow the instructions and point your browser to
 
-  http://localhost:3000/people
+After those changes, you should be good to go!
 
-Awesome.
 
-In the future, http://github.com/snusnu/rails-templates will host a more comprehensive set of rails application templates. Currently only the above are supported but you can expect some reasonable defaults to follow soon. Things like rspec and jquery support are definitely on the list, maybe also support for {devise}[http://github.com/plataformatec/devise] and {inherited_resources}[http://github.com/josevalim/inherited_resources]. These will of course be on a pluggable basis. Nothing will be forced upon you. We heavily encourage you to build your own customized application templates and maybe send us a note if you think they could be interesting to more people.
-
-
-== rspec support
-
-Unfortunately, I haven't yet been able to get rspec to work with the default sqlite3 database.yml setup. In order to get rspec working you would need to change to another database for now, like mysql. Edit your database.yml file to look something like this:
-
-  defaults: &defaults
-    adapter: mysql
-    username: root
-    password:
-    host: localhost
-
-  development:
-    database: dm_rails3_app_development
-    <<: *defaults
-
-    # Add more repositories
-    # repositories:
-    #   repo1:
-    #     adapter:  postgresql
-    #     database: sample_development
-    #     username: the_user
-    #     password: secrets
-    #     host:     localhost
-    #   repo2:
-    #     ...
-
-  test:
-    database: dm_rails3_app_test
-    <<: *defaults
-  production:
-    database: dm_rails3_app_production
-    <<: *defaults
-
-and you should be good to and use rspec.
-
-
-== Developing sequel-rails
-
-Issue the following commands to get a fully functional development environment including datamapper and rails up and running within a minute.
-
-  gem install bundler # if this is new for you
-  bundle install
-  rake spec
-
-Now that was easy, wasn't it? Whenever you want to update your dependencies because you want to make sure you develop against master branches, just issue
-
-  bundle install
-
-again and {bundler}[http://github.com/carlhuda/bundler] will go ahead and fetch the latest commits from the gems you depend on.
-
-
-== Minimal sample application
-
-Have a look at {datamapper_on_rails3}[http://github.com/snusnu/datamapper_on_rails3] for a very minimal sample application that was built following the previous instructions on how to build a new application from scratch.
-
-== Sample Gemfile
-
-Using {bundler}[http://github.com/carlhuda/bundler] it's really easy to get an app going with datamapper and rails3. Just use a Gemfile like this, and bundler will pull in everything needed to run your app. Note that you also must add any additional datamapper plugin or any other gem that you'd like to use to the Gemfile. This makes sure that bundler is able to provide a complete environment containing all required dependencies for your app.
-
-  source 'http://rubygems.org'
-
-  git 'git://github.com/carlhuda/bundler.git'
-
-  gem 'bundler',           '~> 0.9.3'
-
-  git 'git://github.com/rails/rails.git'
-
-  gem 'activesupport',     '~> 3.0.0.beta1', :require => 'active_support'
-  gem 'actionpack',        '~> 3.0.0.beta1', :require => 'action_pack'
-  gem 'railties',          '~> 3.0.0.beta1', :require => 'rails'
-
-  # Uncomment this if you need actionmailer
-  # gem 'actionmailer',      '~> 3.0.0.beta1', :require => 'action_mailer'
-
-  gem 'data_objects',      '~> 0.10.1'
-  gem 'do_sqlite3',        '~> 0.10.1'
-
-  # You can use any of the other available database adapters.
-  # This is only a small excerpt of the list of all available adapters
-  # Have a look at
-  #
-  #  http://wiki.github.com/datamapper/dm-core/adapters
-  #  http://wiki.github.com/datamapper/dm-core/community-plugins
-  #
-  # for a rather complete list of available datamapper adapters and plugins
-
-  # gem 'do_mysql',          '~> 0.10.1'
-  # gem 'do_postgres',       '~> 0.10.1'
-  # gem 'do_oracle',         '~> 0.10.1'
-
-  git 'git://github.com/snusnu/dm-core.git', 'branch' => 'active_support'
-  git "git://github.com/snusnu/dm-more.git", 'branch' => 'active_support'
-
-  gem 'dm-core',           '~> 0.10.2'
-  gem 'dm-types',          '~> 0.10.2'
-  gem 'dm-validations',    '~> 0.10.2'
-  gem 'dm-constraints',    '~> 0.10.2'
-  gem 'dm-aggregates',     '~> 0.10.2'
-  gem 'dm-timestamps',     '~> 0.10.2'
-  gem 'dm-migrations',     '~> 0.10.2'
-  gem 'dm-observer',       '~> 0.10.2'
-
-  # Use this instead of git if you're working on sequel-rails
-  # path '/full/path/to/your/local/clone/of/sequel-rails'
-
-  git 'git://github.com/datamapper/sequel-rails.git'
-
-  gem 'sequel-rails', '~> 0.10.2'
-
-  git 'git://github.com/rspec/rspec.git'
-  git 'git://github.com/rspec/rspec-core.git'
-  git 'git://github.com/rspec/rspec-expectations.git'
-  git 'git://github.com/rspec/rspec-mocks.git'
-  git 'git://github.com/rspec/rspec-rails.git'
-
-  group(:test) do
-    gem 'rspec',              '2.0.0.a8'
-    gem 'rspec-core',         '2.0.0.a8', :require => 'rspec/core'
-    gem 'rspec-expectations', '2.0.0.a8', :require => 'rspec/expectations'
-    gem 'rspec-mocks',        '2.0.0.a8', :require => 'rspec/mocks'
-    gem 'rspec-rails',        '2.0.0.a9'
-  end
-
-
-== Sample database.yml files
-
-Sequel supports connecting to and working with multiple repositories easily. In order to be able to take full advantage of that feature in rails, you can configure as many repositories for your different environments as you wish. All you need to do is follow some simple naming conventions and you're good to go. Have a look at the #{adapter}_defaults declarations in the sample files below. That's the only convention you need to follow. Your default declarations should always end with "defaults". This is necessary for sequel-rails to not confuse these with any of your environment declarations. In fact, sequel-rails looks at the content of your database.yml and rejects every key that matches /defaults/. The remaining entries represent the repository configurations for the available environments.
-
-An example for setting up a single repository for every environment.
-
-  defaults: &defaults
-    adapter: mysql
-    username: root
-    password:
-    host: localhost
-
-  development:
-    database: rails3_app_development
-    <<: *defaults
-  test:
-    database: rails3_app_test
-    <<: *defaults
-  production:
-    database: rails3_app_production
-    <<: *defaults
-
-
-An example for setting up multiple repositories for every environment.
-
-  mysql_defaults: &mysql_defaults
-    adapter: mysql
-    username: mysql_user
-    password: mysql_sekret
-    host: localhost
-
-  postgres_defaults: &postgres_defaults
-    adapter: postgres
-    username: postgres_user
-    password: postgres_sekret
-    host: postgres_host
-
-  oracle_defaults: &oracle_defaults
-    adapter: oracle
-    username: oracle_user
-    password: oracle_sekret
-    host: oracle_host
-
-
-  development:
-    database: rails3_mysql_development
-    <<: *mysql_defaults
-    repositories:
-      foo:
-        database: rails3_postgres_development
-        <<: *postgres_defaults
-      bar:
-        database: rails3_oracle_development
-        <<: *oracle_defaults
-
-  test:
-    database: rails3_mysql_test
-    <<: *mysql_defaults
-    repositories:
-      foo:
-        database: rails3_postgres_test
-        <<: *postgres_defaults
-      bar:
-        database: rails3_oracle_test
-        <<: *oracle_defaults
-
-  production:
-    database: rails3_mysql_production
-    <<: *mysql_defaults
-    repositories:
-      foo:
-        database: rails3_postgres_production
-        <<: *postgres_defaults
-      bar:
-        database: rails3_oracle_production
-        <<: *oracle_defaults
-
-Once you have defined your database.yml file, sequel-rails's rake tasks will be able to create, drop, auto_migrate! and auto_upgrade! all your defined repositories.
-
-== Available generators
-
-Due to the awesomeness of rails3 generators we get some cool generators almost for free. Since the new generators provide hooks that allow the sequel-rails gem to provide generators that hook into parts like model, scaffolds or test generation, everything just works like it would with active_record.
-
-The following generators are available to help you get started with the typical components of any rails application.
-
-  vendor/bin/rails generate controller
-  vendor/bin/rails generate generator
-  vendor/bin/rails generate helper
-  vendor/bin/rails generate integration_test
-  vendor/bin/rails generate mailer
-  vendor/bin/rails generate metal
-  vendor/bin/rails generate migration
-  vendor/bin/rails generate model
-  vendor/bin/rails generate model_subclass
-  vendor/bin/rails generate observer
-  vendor/bin/rails generate performance_test
-  vendor/bin/rails generate plugin
-  vendor/bin/rails generate resource
-  vendor/bin/rails generate scaffold
-  vendor/bin/rails generate scaffold_controller
-  vendor/bin/rails generate session_migration
-  vendor/bin/rails generate stylesheets
-
-
-== Available datamapper specific rake tasks
+== Available sequel specific rake tasks
 
 To get a list of all available rake tasks in your rails3 app, issue the usual
 
@@ -260,8 +36,6 @@ To get a list of all available rake tasks in your rails3 app, issue the usual
 Once you do that, you will see the following rake tasks among others. These are the ones that sequel-rails added for us.
 
   ...
-  vendor/bin/rake db:automigrate           # Perform destructive automigration
-  vendor/bin/rake db:autoupgrade           # Perform non destructive automigration
   vendor/bin/rake db:create                # Create the database(s) defined in config/database.yml for the current Rails.env - also creates the test database(s) if Rails.env.development?
   vendor/bin/rake db:create:all            # Create all the local databases defined in config/database.yml
   vendor/bin/rake db:drop                  # Drops the database(s) for the current Rails.env - also drops the test database(s) if Rails.env.development?
@@ -273,203 +47,23 @@ Once you do that, you will see the following rake tasks among others. These are 
   vendor/bin/rake db:sessions:clear        # Clear the sessions table for SequelStore
   vendor/bin/rake db:sessions:create       # Creates the sessions table for SequelStore
   vendor/bin/rake db:setup                 # Create the database, load the schema, and initialize with the seed data
-
   ...
-
-
-== Configuring and introspecting sequel-rails
-
-Rails3 makes it easy to expose framework component specific configuration to application developers in a uniform and easy to use way. To build on this philosophy, sequel-rails exposes its configuration via a single object that is used throughout sequel-rails's code to store configuration relevant to datamapper and to rails. You can access it from within your application and of course alter it's settings in your config/application.rb or config/environments files. Here's a quick overview of the API the configuration object exposes. Expect this to grow as we come up with additional useful stuff to configure.
-
-
-  Rails::Sequel.configuration
-  Rails::Sequel::Configuration.for(database_yml_hash)
-
-  Rails::Sequel::Configuration#raw
-  Rails::Sequel::Configuration#environments
-  Rails::Sequel::Configuration#repositories
-  Rails::Sequel::Configuration#identity_map=(value)
-  Rails::Sequel::Configuration#identity_map
-  Rails::Sequel::Configuration#adapter_cascade
-
-
-
-As promised, you can easily inspect the configuration from your running rails application. Let's start a rails console and have a look what's configured for our app.
-
-  ree-1.8.7-2010.01 mungo:datamapper_on_rails3 snusnu$ vendor/bin/rails console
-  Loading development environment (Rails 3.0.0.beta)
-  ruby-1.8.7-p248 > require 'pp'
-   => ["PP"]
-  ruby-1.8.7-p248 > pp Rails::Sequel.configuration
-  #<Rails::Sequel::Configuration:0x1025bbc58
-   @adapter_cascade=Rails::Sequel::Adapters::Cascade,
-   @identity_map=true,
-   @plugins=["dm-validations", "dm-timestamps", "dm-observer", "dm-migrations"],
-   @raw=
-    {"production"=>
-      {"adapter"=>"mysql",
-       "username"=>"root",
-       "database"=>"rails3_app_production",
-       "host"=>"localhost",
-       "password"=>nil},
-     "development"=>
-      {"adapter"=>"mysql",
-       "username"=>"root",
-       "database"=>"rails3_app_development",
-       "host"=>"localhost",
-       "password"=>nil},
-     "defaults"=>
-      {"username"=>"root",
-       "adapter"=>"mysql",
-       "host"=>"localhost",
-       "password"=>nil},
-     "test"=>
-      {"adapter"=>"mysql",
-       "username"=>"root",
-       "database"=>"rails3_app_test",
-       "host"=>"localhost",
-       "password"=>nil}},
-   @repositories=
-    {"production"=>
-      {"default"=>
-        {"adapter"=>"mysql",
-         "username"=>"root",
-         "database"=>"rails3_app_production",
-         "host"=>"localhost",
-         "password"=>nil}},
-     "development"=>
-      {"default"=>
-        {"adapter"=>"mysql",
-         "username"=>"root",
-         "database"=>"rails3_app_development",
-         "host"=>"localhost",
-         "password"=>nil}},
-     "test"=>
-      {"default"=>
-        {"adapter"=>"mysql",
-         "username"=>"root",
-         "database"=>"rails3_app_test",
-         "host"=>"localhost",
-         "password"=>nil}}}>
-   => nil
-
-Additionally, you can reach the configuration object via the standard way that rails provides to expose configuration for framework components and plugins.
-
-  Rails.application.config.sequel.configuration
-
-This will give you the exact same object we inspected in the previous pretty print output from rails console.
-
-
-== Extending sequel-rails
-
-It's easy to extend or adapt sequel-rails to meet your specific needs. Thanks to the railties API it's possible to hook into any part of the initialization process. In order to customize sequel-rails, all you need to do is define your own Rails::Railtie class that inherits from Rails::Sequel::Railtie and require that instead of the standard sequel-rails/railtie. During initialization of any rails plugin, the initializers defined by that plugin are run in the order specified. Since sequel-rails defines every action that gets called by its initializers as a method on either the Railtie instance or the class, you can just go ahead and overwrite these in your subclass. All those methods get called with the running Rails::Application (always reachable via Rails.application) as single parameter, so you can customize depending on the app's state as much as you wish. Additionally, the initializers are all named, and you can hook your own additional initializers before or after any of the named rails (or sequel-rails) initializers.
-
-To give you an idea of what you get when inheriting from Rails::Sequel::Railtie have a look at the list of methods provided by that object.
-
-  Rails::Sequel::Railtie.setup_sequel(app)
-  Rails::Sequel::Railtie.preload_lib(app)
-  Rails::Sequel::Railtie.preload_models(app)
-
-  Rails::Sequel::Railtie#configure_sequel(app)
-  Rails::Sequel::Railtie#setup_adapter_cascade(app)
-  Rails::Sequel::Railtie#setup_routing_support(app)
-  Rails::Sequel::Railtie#setup_controller_runtime(app)
-  Rails::Sequel::Railtie#setup_logger(app)
-
-
-To complete the picture of sequel-rails's initialization process, here's an overview of the defined initializers in the order they are called by rails during bootup. Note that every one of these initializers does one single thing; calling one of the methods listed above. This makes it easy to customize each of these steps by overwriting the respective method.
-
-  initializer 'sequel.configuration' do |app|
-    configure_sequel(app)
-  end
-
-  initializer 'sequel.logger' do |app|
-    setup_logger(app, Rails.logger)
-  end
-
-  initializer 'sequel.adapter_cascade' do |app|
-    setup_adapter_cascade(app)
-  end
-
-  initializer 'sequel.routing_support' do |app|
-    setup_routing_support(app)
-  end
-
-  # Expose database runtime to controller for logging.
-  initializer "sequel.log_runtime" do |app|
-    setup_controller_runtime(app)
-  end
-
-  # Run setup code after_initialize to make sure all config/initializers
-  # are in effect once we setup the connection. This is especially necessary
-  # for the cascaded adapter wrappers that need to be declared before setup.
-  # Note that setup_datamapper (and needed methods are defined in class scope)
-
-  config.after_initialize do |app|
-    setup_sequel(app)
-  end
-
-If you want to add additional rake tasks in your extension, you can do so by adding the following to your railtie.
-
-  rake_tasks do
-    load 'path/to/your/tasks.rake'
-  end
-
-
-== Identity Map support
-
-By default, sequel-rails enables the use of the {identity map}[http://datamapper.org/why.html]. If for any reason you want to turn that off, just add the following line to your config/application.rb or your config/environments/*.rb file.
-
-    config.sequel.identity_map = false
-
-Activating the identity map is achieved by installing a middleware that wraps the whole request inside
-
-  Sequel.repository { ... }
-
-Note that this scopes every call to datamapper to the :default repository specified in your database.yml file. If you need to access a different repository from within your actions, just wrap the calls in another Sequel.repository block. Sequel stacks the repositories it uses and the innermost will always win.
-
-
-== Using additional datamapper plugins
-
-In order to use additional plugins add them to the Gemfile and require them from inside a file in config/initializers. Once you've done that, update your bundle and you should be ready to use the plugin(s)
-
-  cd /path/to/your/app
-  # edit Gemfile
-  bundle install
-
-Have a look at this application's {Gemfile}[http://github.com/snusnu/datamapper_on_rails3/blob/master/Gemfile] for an idea of how to use gems from git repositories.
-
-
-== Rails notification system
-
-Currently sequel-rails publishes the same benchmarking information like active_record does. This means that you will get output like this in your log files.
-
-  Completed in 9ms (Views: 7.6ms | Models: 0.6ms) with 200
-
-While the SQL issued by DO adapters is already being logged properly, it is not yet published to possible rails subscribers. This is basically the only thing we're still missing in terms of datamapper rails3 notifications integration, compared with active_record. Of course we're not tied to only publishing these messages. If anyone can think of other useful information to publish, it's easy to hook into rails' notification system.
 
 
 == Current Issues
 
-* migrations might not work perfectly
-* rspec-2 is not yet integrated
-
+* There are bound to be a lot, but I'm not yet sure what they are
 
 == TODO (not necessarily in that order)
 
-* SPECS !!!
-* Think about a release strategy supporting both beta releases and master branch
-* Further README updates
-* More work on migrations
-* Check if the {session store}[http://github.com/datamapper/sequel-rails/blob/master/lib/sequel-rails/session_store.rb] support works
-* Provide a rails template for generating tailored apps for datamapper
-* Publish SQL issued by DO (and eventually every adapter) to rails subscribers
-* Think about integrating with {dana}[http://github.com/snusnu/dm-accepts_nested_attributes]
-* Think about integrating {dm-serializer}[http://github.com/datamapper/dm-more/tree/master/dm-serializer/]
+* SPECS
+* README changes
+* Publish SQL issued by sequel to rails subscribers
 
 == Credits
 
-Big thanks to everyone working on {datamapper}[http://github.com/datamapper/dm-core], {rails}[http://github.com/rails/rails], {bundler}[http://github.com/carlhuda/bundler] and open source in general. This will be (and actually already is) an awesome platform for developing web applications.
+The {dm-rails}[http://github.com/datamapper/dm-rails] team wrote most of this code, I just sequel-ized it.
+
 
 
 == Note on Patches/Pull Requests
@@ -485,17 +79,8 @@ Big thanks to everyone working on {datamapper}[http://github.com/datamapper/dm-c
 
 == The sequel-rails team
 
-Thx to all contributors, every patch, big or small is very much appreciated!
-
-* Martin Gamsjaeger (snusnu)
-* Dan Kubb (dkubb)
-* Alex Coles (myabc)
-* Alex Mankuta
-* Foy Savas
-* Randall Brewer
-* Josh Huckabee
-* Patrik Sundberg
+* Brasten Sager (brasten)
 
 == Copyright
 
-Copyright (c) 2009-2010 The sequel-rails team. See {LICENSE}[http://github.com/datamapper/sequel-rails/blob/master/LICENSE] for details.
+Copyright (c) 2010 The sequel-rails team. See {LICENSE}[http://github.com/brasten/sequel-rails/blob/master/LICENSE] for details.

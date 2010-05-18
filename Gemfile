@@ -1,7 +1,5 @@
 source 'http://rubygems.org'
 
-sequel = 'http://github.com/jeremyevans'
-
 gem 'rake',                 '~> 0.8.7'
 gem 'jeweler',              '~> 1.4'
 gem 'yard',                 '~> 0.5'
@@ -14,7 +12,7 @@ git 'git://github.com/rails/rails.git' do
 
 end
 
-gem 'sequel',              '~> 3.10.0'#, :git => "#{sequel}/sequel.git"
+gem 'sequel',              '~> 3.10.0'
 
 group :test do
   gem 'rspec'

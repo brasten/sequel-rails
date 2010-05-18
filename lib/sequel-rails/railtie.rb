@@ -37,9 +37,9 @@ module Rails
         setup_logger(app, Rails.logger)
       end
 
-      # initializer 'sequel.i18n_support' do |app|
-      #   setup_i18n_support(app)
-      # end
+      initializer 'sequel.i18n_support' do |app|
+        setup_i18n_support(app)
+      end
 
       # Expose database runtime to controller for logging.
       initializer "sequel.log_runtime" do |app|
@@ -67,7 +67,7 @@ module Rails
       end
 
       def setup_i18n_support(app)
-        ::Sequel::Model.append_inclusions(Rails::Sequel::I18nSupport)
+        ::Sequel::Model.send :include, Rails::Sequel::I18nSupport
       end
 
       def setup_controller_runtime(app)
@@ -77,7 +77,6 @@ module Rails
 
       def setup_logger(app, logger)
         app.config.sequel.logger=logger
-        # Rails::Sequel.setup_logger(logger)
       end
 
       module Setup

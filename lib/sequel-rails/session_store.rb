@@ -1,4 +1,4 @@
-require 'dm-core'
+require 'sequel'
 
 # Implements Sequel-specific session store.
 
@@ -7,14 +7,33 @@ module Rails
 
     class SessionStore < ActionDispatch::Session::AbstractStore
 
-      class Session
+      class Session < ::Sequel::Model
 
-        include ::Sequel::Resource
+        # property :id,         Serial
+        # property :session_id, String,   :required => true, :unique => true, :unique_index => true
+        # property :data,       Object,   :required => true, :default => ActiveSupport::Base64.encode64(Marshal.dump({}))
+        # property :updated_at, DateTime, :required => false, :index => true
 
-        property :id,         Serial
-        property :session_id, String,   :required => true, :unique => true, :unique_index => true
-        property :data,       Object,   :required => true, :default => ActiveSupport::Base64.encode64(Marshal.dump({}))
-        property :updated_at, DateTime, :required => false, :index => true
+        class << self
+          
+          def auto_migrate!
+            self.db.create_table :sessions do
+              primary_key :id
+              column :session_id, String, 
+                     :null    => false, 
+                     :unique  => true, 
+                     :index   => true
+
+              column :data, :text, 
+                     :null => false 
+                     
+              column :updated_at, DateTime, 
+                     :null => true, 
+                     :index => true
+            end
+          end
+          
+        end
 
         def self.name
           'session'
@@ -52,7 +71,9 @@ module Rails
       end
 
       def find_session(sid)
-        self.class.session_class.first_or_new(:session_id => sid)
+        klass = self.class.session_class
+        
+        klass.where(:session_id => sid).first || klass.new(:session_id => sid)
       end
 
     end

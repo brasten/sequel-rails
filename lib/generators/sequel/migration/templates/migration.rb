@@ -1,23 +1,16 @@
-migration <%= migration_number.to_i %>, :<%= migration_file_name %> do
+class <%= migration_file_name.camelize %>Migration < Sequel::Migration
 
-  up do
-<% unless attributes.empty? -%>
-    modify_table :<%= table_name %> do
+  def up
+    create_table :<%= table_name %> do
+      primary_key :id
 <% attributes.each do |attribute| -%>
-      <%= migration_action %>_column :<%= attribute.name %><% if migration_action == 'add' %>, :<%= attribute.type_class %><% end -%>
+      <%= attribute.type_class %> :<%= attribute.name %>
 <% end -%>
     end
-<% end -%>
   end
 
-  down do
-<% unless attributes.empty? -%>
-    modify_table :<%= table_name %> do
-<% attributes.reverse.each do |attribute| -%>
-      <%= migration_action == 'add' ? 'drop' : 'add' %>_column :<%= attribute.name %><% if migration_action == 'drop' %>, :<%= attribute.type_class %><% end -%>
-<% end -%>
-    end
-<% end -%>
+  def down
+    drop_table :<%= table_name %>
   end
 
 end

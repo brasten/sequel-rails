@@ -8,7 +8,7 @@ namespace :db do
   end
 
   desc 'Create the database, load the schema, and initialize with the seed data'
-  task :setup => [ 'db:create', 'db:automigrate', 'db:seed' ]
+  task :setup => [ 'db:create', 'db:migrate', 'db:seed' ]
 
   namespace :test do
     task :prepare => ['db:setup']
@@ -44,37 +44,6 @@ namespace :db do
     end
   end
 
-
-  desc 'Perform destructive automigration of all repositories in the current Rails.env'
-  task :automigrate => :load_models do
-    Rails::Sequel.configuration.environments[Rails.env].each do |repository, config|
-      ::Sequel.auto_migrate!(repository.to_sym)
-      puts "[datamapper] Finished auto_migrate! for :#{repository} repository '#{config['database']}'"
-    end
-    if Rails.env.development? && Rails::Sequel.configuration.environments['test']
-      Rails::Sequel.setup('test')
-      Rails::Sequel.configuration.environments['test'].each do |repository, config|
-        ::Sequel.auto_migrate!(repository.to_sym)
-        puts "[datamapper] Finished auto_migrate! for :#{repository} repository '#{config['database']}'"
-      end
-    end
-  end
-
-  desc 'Perform non destructive automigration of all repositories in the current Rails.env'
-  task :autoupgrade => :load_models do
-    Rails::Sequel.configuration.environments[Rails.env].each do |repository, config|
-      ::Sequel.auto_upgrade!(repository.to_sym)
-      puts "[datamapper] Finished auto_upgrade! for :#{repository} repository '#{config['database']}'"
-    end
-    if Rails.env.development? && Rails::Sequel.configuration.environments['test']
-      Rails::Sequel.setup('test')
-      Rails::Sequel.configuration.environments['test'].each do |repository, config|
-        ::Sequel.auto_upgrade!(repository.to_sym)
-        puts "[datamapper] Finished auto_upgrade! for :#{repository} repository '#{config['database']}'"
-      end
-    end
-  end
-
   desc 'Load the seed data from db/seeds.rb'
   task :seed => :environment do
     seed_file = File.join(Rails.root, 'db', 'seeds.rb')
@@ -83,22 +52,40 @@ namespace :db do
 
   namespace :migrate do
     task :load => :environment do
-      require 'sequel/extensions/migration'
-      FileList['db/migrate/*.rb'].each do |migration|
-        load migration
-      end
+      # FileList['db/migrate/*.rb'].each do |migration|
+      #   load migration
+      # end
     end
 
     desc 'Migrate up using migrations'
     task :up, :version, :needs => :load do |t, args|
-      ::Sequel::MigrationRunner.migrate_up!(args[:version])
+      require 'sequel-rails/migrations'
+      ::Rails::Sequel::Migrations.migrate_up!(args[:version])
     end
 
     desc 'Migrate down using migrations'
     task :down, :version, :needs => :load do |t, args|
-      ::Sequel::MigrationRunner.migrate_down!(args[:version])
+      require 'sequel-rails/migrations'
+      ::Rails::Sequel::Migrations.migrate_down!(args[:version])
     end
   end
+
+  ##
+  # TODO: deal with this at some point
+  #
+  # namespace :schema do
+  #   desc 'Create a db/schema.rb file that can be portably used against any DB supported by Sequel'
+  #   task :dump => :environment do
+  #     File.open(ENV['SCHEMA'] || "#{Rails.root}/db/schema.rb", "w") do |file|
+  #       file.puts(::Sequel::Model.db.schema())
+  #     end
+  #   end
+  #   
+  #   desc 'Load a schema.rb file into the database'
+  #   task :load => :environment do
+  #     
+  #   end
+  # end
 
   desc 'Migrate the database to the latest version'
   task :migrate => 'db:migrate:up'
@@ -108,14 +95,14 @@ namespace :db do
     task :create => :environment do
       require 'sequel-rails/session_store'
       Rails::Sequel::SessionStore::Session.auto_migrate!
-      puts "Created '#{Rails::Sequel.configurations[Rails.env]['database']}.sessions'"
+      puts "Created '#{::Rails::Sequel.configuration.environments[Rails.env]['database']}.sessions'"
     end
 
     desc "Clear the sessions table for SequelStore"
     task :clear => :environment do
       require 'sequel-rails/session_store'
-      Rails::Sequel::SessionStore::Session.all.destroy!
-      puts "Deleted entries from '#{Rails::Sequel.configurations[Rails.env]['database']}.sessions'"
+      Rails::Sequel::SessionStore::Session.delete()
+      puts "Deleted entries from '#{::Rails::Sequel.configuration.environments[Rails.env]['database']}.sessions'"
     end
   end
 

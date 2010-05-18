@@ -9,7 +9,7 @@ module Rails
   module Sequel
 
     def self.setup(environment)
-      puts "[datamapper] Setting up the #{environment.inspect} environment:"
+      puts "[sequel] Setting up the #{environment.inspect} environment:"
 
       ::Sequel.connect({:logger => configuration.logger}.merge(::Rails::Sequel.configuration.environments[environment.to_s]))
     end
