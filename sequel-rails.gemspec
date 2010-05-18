@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sequel-rails}
-  s.version = "0.10.2"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brasten Sager (brasten)"]
-  s.date = %q{2010-05-17}
+  s.date = %q{2010-05-18}
   s.description = %q{Integrate Sequel with Rails 3}
   s.email = %q{brasten@gmail.com}
   s.extra_rdoc_files = [
@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "autotest/discover.rb",
      "lib/generators/sequel.rb",
      "lib/generators/sequel/migration/migration_generator.rb",
      "lib/generators/sequel/migration/templates/migration.rb",
@@ -33,6 +34,7 @@ Gem::Specification.new do |s|
      "lib/generators/sequel/observer/templates/observer.rb",
      "lib/sequel-rails.rb",
      "lib/sequel-rails/configuration.rb",
+     "lib/sequel-rails/migrations.rb",
      "lib/sequel-rails/railtie.rb",
      "lib/sequel-rails/railties/benchmarking_mixin.rb",
      "lib/sequel-rails/railties/controller_runtime.rb",
