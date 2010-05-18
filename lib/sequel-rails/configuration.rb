@@ -16,6 +16,10 @@ module Rails
       attr_accessor :logger
       attr_accessor :migration_dir
 
+      def environment_for(name)
+        environments[name.to_s] || environments[name.to_sym]
+      end
+
       def environments
         @environments ||= @raw.inject({}) do |normalized, environment|
           name, config = environment.first, environment.last
