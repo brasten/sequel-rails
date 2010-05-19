@@ -1,0 +1,8 @@
+== 0.1.2
+* fixed log_subscriber bug that 0.1.1 was -supposed- to fix.
+
+== 0.1.1
+* bug fixes, no additional functionality
+
+== 0.1.0
+* initial release

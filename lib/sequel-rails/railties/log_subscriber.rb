@@ -22,7 +22,7 @@ module Sequel
       end
 
       def logger
-        ::Sequel.logger
+        ::Rails::Sequel.configuration.logger
       end
 
     end
