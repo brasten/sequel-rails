@@ -13,11 +13,9 @@ module Rails
         attr_internal :db_runtime
 
         def cleanup_view_runtime
-          # TODO add checks if Sequel is connected to a repository.
-          # If it is, do this, if it isn't, just delegate to super
-          db_rt_before_render = ::Sequel.repository.adapter.reset_runtime
+          db_rt_before_render = ::Rails::Sequel.reset_runtime
           runtime = super
-          db_rt_after_render = ::Sequel.repository.adapter.reset_runtime
+          db_rt_after_render = ::Rails::Sequel.reset_runtime
           self.db_runtime = db_rt_before_render + db_rt_after_render
           runtime - db_rt_after_render
         end

@@ -1,5 +1,6 @@
 == 0.1.2
 * fixed log_subscriber bug that 0.1.1 was -supposed- to fix.
+* fixed controller_runtime bug
 
 == 0.1.1
 * bug fixes, no additional functionality
