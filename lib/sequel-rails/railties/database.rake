@@ -11,7 +11,10 @@ namespace :db do
   task :setup => [ 'db:create', 'db:migrate', 'db:seed' ]
 
   namespace :test do
-    task :prepare => ['db:setup']
+    task :prepare do
+      Rails.env = "test"
+      Rake::Task["db:setup"].invoke
+    end
   end
 
   namespace :create do
