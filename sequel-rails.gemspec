@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sequel-rails}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brasten Sager (brasten)"]
-  s.date = %q{2010-05-19}
+  s.date = %q{2010-06-26}
   s.description = %q{Integrate Sequel with Rails 3}
   s.email = %q{brasten@gmail.com}
   s.extra_rdoc_files = [
@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
      ".gitignore",
+     "CHANGELOG",
      "Gemfile",
      "LICENSE",
      "README.rdoc",
@@ -41,6 +42,7 @@ Gem::Specification.new do |s|
      "lib/sequel-rails/railties/database.rake",
      "lib/sequel-rails/railties/i18n_support.rb",
      "lib/sequel-rails/railties/log_subscriber.rb",
+     "lib/sequel-rails/runtime.rb",
      "lib/sequel-rails/session_store.rb",
      "lib/sequel-rails/setup.rb",
      "lib/sequel-rails/storage.rb",
