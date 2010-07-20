@@ -12,7 +12,7 @@ git 'git://github.com/rails/rails.git' do
 
 end
 
-gem 'sequel',              '~> 3.10.0'
+gem 'sequel',              '~> 3.11.0'
 
 group :test do
   gem 'rspec'

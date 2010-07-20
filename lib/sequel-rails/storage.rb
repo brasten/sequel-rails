@@ -158,8 +158,18 @@ module Rails
             database
           )
         end
-
       end
+      
+      class Jdbc < Storage
+        def _create
+          raise NotImplementedError
+        end
+
+        def _drop
+          raise NotImplementedError
+        end
+      end
+      
     end
   end
 end

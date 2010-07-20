@@ -37,13 +37,16 @@ module Rails
       def normalize_repository_config(hash)
         config = {}
         hash.each do |key, value|
-          config[key] = 
-            if key == 'port'
+          config[key.to_s] = 
+            if key.to_s == 'port'
               value.to_i
-            elsif key == 'adapter' && value == 'sqlite3'
+            elsif key.to_s == 'adapter' && value == 'sqlite3'
               'sqlite'
-            elsif key == 'database' && (hash['adapter'] == 'sqlite3' || hash['adapter'] == 'sqlite')
-              value == ':memory:' ? value : File.expand_path(hash['database'], root)
+            elsif key.to_s == 'database' && (hash['adapter'] == 'sqlite3' || 
+                                             hash['adapter'] == 'sqlite'  ||
+                                             hash[:adapter]  == 'sqlite3' ||
+                                             hash[:adapter]  == 'sqlite')
+              value == ':memory:' ? value : File.expand_path((hash['database'] || hash[:database]), root)
             else
               value
             end
