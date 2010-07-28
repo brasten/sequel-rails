@@ -1,7 +1,7 @@
 module Sequel
   module Railties
 
-    class LogSubscriber < Rails::LogSubscriber
+    class LogSubscriber < ActiveSupport::LogSubscriber
 
       def sql(event)
         name = '%s (%.1fms)' % [event.payload[:name], event.duration]

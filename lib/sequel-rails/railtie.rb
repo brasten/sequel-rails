@@ -21,7 +21,7 @@ module Rails
 
     class Railtie < Rails::Railtie
 
-      log_subscriber :sequel, ::Sequel::Railties::LogSubscriber.new
+      ::Sequel::Railties::LogSubscriber.attach_to :sequel
 
       config.generators.orm :sequel, :migration => true
 
