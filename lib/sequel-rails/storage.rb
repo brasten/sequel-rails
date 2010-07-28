@@ -161,13 +161,46 @@ module Rails
       end
       
       class Jdbc < Storage
+        
+        def _is_mysql?
+          database.match(/^jdbc:mysql/)
+        end
+        
+        def _root_url
+          database.scan /^jdbc:mysql:\/\/\w*:?\d*/
+        end
+        
+        def db_name
+          database.scan(/^jdbc:mysql:\/\/\w+:?\d*\/(\w+)/).flatten.first
+        end
+        
+        def _params
+          database.scan /\?.*$/
+        end
+        
         def _create
-          raise NotImplementedError
+          if _is_mysql?
+            ::Sequel.connect("#{_root_url}#{_params}") do |db|
+              db.execute("CREATE DATABASE `#{db_name}` DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}")
+            end
+          end
         end
 
         def _drop
-          raise NotImplementedError
+          if _is_mysql?
+            ::Sequel.connect("#{_root_url}#{_params}") do |db|
+              db.execute("DROP DATABASE IF EXISTS `#{db_name}`")
+            end
+          end
         end
+        
+        private
+        
+        def collation
+          @collation ||= config['collation'] || ENV['COLLATION'] || 'utf8_unicode_ci'
+        end
+        
+        
       end
       
     end

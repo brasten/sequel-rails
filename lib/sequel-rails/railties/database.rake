@@ -10,10 +10,32 @@ namespace :db do
   desc 'Create the database, load the schema, and initialize with the seed data'
   task :setup => [ 'db:create', 'db:migrate', 'db:seed' ]
 
+  # namespace :test do
+  #   task :prepare do
+  #     Rails.env = "test"
+  #     Rake::Task["db:setup"].invoke
+  #   end
+  # end
+  
   namespace :test do
-    task :prepare do
-      Rails.env = "test"
-      Rake::Task["db:setup"].invoke
+    desc "Recreate the test database from the current schema.rb"
+    task :load => 'db:test:purge' do
+      db = Rails::Sequel.setup('test')
+      Rake::Task['db:schema:load'].invoke(db)
+    end
+
+    desc 'Runs db:test:load'
+    task :prepare => :load
+
+    desc 'Empty the test database'
+    task :purge => :environment do
+      Rake::Task['db:drop'].invoke()
+      Rake::Task['db:create'].invoke()
+    end
+    
+    task :environment do
+      Rails.env = 'test'
+      Rake::Task['environment'].invoke()
     end
   end
 
@@ -76,20 +98,32 @@ namespace :db do
   ##
   # TODO: deal with this at some point
   #
-  # namespace :schema do
-  #   desc 'Create a db/schema.rb file that can be portably used against any DB supported by Sequel'
-  #   task :dump => :environment do
-  #     File.open(ENV['SCHEMA'] || "#{Rails.root}/db/schema.rb", "w") do |file|
-  #       file.puts(::Sequel::Model.db.schema())
-  #     end
-  #   end
-  #   
-  #   desc 'Load a schema.rb file into the database'
-  #   task :load => :environment do
-  #     
-  #   end
-  # end
+  namespace :schema do
+    desc "Create a db/schema.rb file that can be portably used against any DB supported by Sequel."
+    task :dump => :environment do
+      Sequel.extension :schema_dumper
 
+      File.open(ENV['SCHEMA'] || "#{Rails.root}/db/schema.rb", "w") do |file|
+        file.puts Sequel::Model.db.dump_schema_migration
+      end
+    end
+
+    desc "Load a schema.rb file into the database."
+    task :load, :db, :needs => :environment do |t, args|
+      args.with_defaults(:db => Sequel::Model.db)
+
+      file = ENV['SCHEMA'] || "#{Rails.root}/db/schema.rb"
+      if File.exists?(file) then
+        Sequel.extension :migration
+        schema_migration = eval(File.read(file))
+        schema_migration.apply(args.db, :up)
+      else
+        abort "#{file} doesn't exist."
+      end
+    end
+  end
+  
+  
   desc 'Migrate the database to the latest version'
   task :migrate => 'db:migrate:up'
 
@@ -108,5 +142,6 @@ namespace :db do
       puts "Deleted entries from '#{::Rails::Sequel.configuration.environments[Rails.env]['database']}.sessions'"
     end
   end
-
 end
+
+task 'test:prepare' => 'db:test:prepare'

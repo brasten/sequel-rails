@@ -21,9 +21,10 @@ module Rails
 
     class Railtie < Rails::Railtie
 
-      log_subscriber :sequel, ::Sequel::Railties::LogSubscriber.new
+      ::Sequel::Railties::LogSubscriber.attach_to :sequel
 
       config.generators.orm :sequel, :migration => true
+      config.rails_fancy_pants_logging = true
 
       rake_tasks do
         load 'sequel-rails/railties/database.rake'
@@ -31,6 +32,8 @@ module Rails
 
       initializer 'sequel.configuration' do |app|
         configure_sequel(app)
+        
+        Rails::Sequel.setup(Rails.env)
       end
 
       initializer 'sequel.logger' do |app|
@@ -51,14 +54,14 @@ module Rails
       # for the cascaded adapter wrappers that need to be declared before setup.
 
       config.after_initialize do |app|
-        setup_sequel(app)
+        ::Sequel::Model.plugin :active_model
+        ::Sequel::Model.plugin :validation_helpers
+
+        ::Sequel::Model.raise_on_save_failure = false
       end
 
 
-
-
       # Support overwriting crucial steps in subclasses
-
 
       def configure_sequel(app)
         app.config.sequel = Rails::Sequel::Configuration.for(
@@ -78,32 +81,6 @@ module Rails
       def setup_logger(app, logger)
         app.config.sequel.logger=logger
       end
-
-      module Setup
-
-        def setup_sequel(app)
-          # preload_lib(app)
-          # preload_models(app)
-          Rails::Sequel.setup(Rails.env)
-        end
-
-        # def preload_lib(app)
-        #   app.config.paths.lib.each do |path|
-        #     Dir.glob("#{path}/**/*.rb").sort.each do |file|
-        #       require_dependency file unless file.match(/#{path}\/generators\/*/)
-        #     end
-        #   end
-        # end
-        # 
-        # def preload_models(app)
-        #   app.config.paths.app.models.each do |path|
-        #     Dir.glob("#{path}/**/*.rb").sort.each { |file| require_dependency file }
-        #   end
-        # end
-
-      end
-
-      extend Setup
 
     end
 
