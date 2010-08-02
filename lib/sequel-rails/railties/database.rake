@@ -24,58 +24,47 @@ namespace :db do
 
   namespace :create do
     desc 'Create all the local databases defined in config/database.yml'
-    task :all do
-      Rails.configuration.database_configuration.each_value do |config|
-        next unless config['database']
-        database = config.delete('database')
-        DB = Sequel.connect(config)
-        default_options = "DEFAULT CHARSET utf8 COLLATE utf8_unicode_ci"
-        puts "Creating database \"#{config['database']}\" if it doesn't already exist"
-        DB.run "CREATE DATABASE IF NOT EXISTS `#{config['database']}` /*!40100 #{default_options} */"
-      end
+    task :all, :needs => :environment do
+      require 'sequel-rails/storage'
+      Rails::Sequel::Storage.create_all
     end
   end
 
   desc "Create the database defined in config/database.yml for the current Rails.env - also creates the test database if Rails.env.development?"
-  task :create do
-    connect_options = Rails.configuration.database_configuration[Rails.env]
-    connect_options.delete('database')
-    DB = Sequel.connect(connect_options)
-    default_options = "DEFAULT CHARSET utf8 COLLATE utf8_unicode_ci"
-    puts "Creating database \"#{Rails.configuration.database_configuration[Rails.env]['database']}\" if it doesn't already exist"
-    DB.run "CREATE DATABASE IF NOT EXISTS `#{Rails.configuration.database_configuration[Rails.env]['database']}` /*!40100 #{default_options} */"
+  task :create, :env, :needs => :environment do |t, args|
+    args.with_defaults(:env => Rails.env)
+    
+    require 'sequel-rails/storage'
+    Rails::Sequel::Storage.new(args.env).create
+    
     if Rails.env.development? && Rails.configuration.database_configuration['test']
-      puts "Creating database \"#{Rails.configuration.database_configuration['test']['database']}\" if it doesn't already exist"
-      DB.run "CREATE DATABASE IF NOT EXISTS `#{Rails.configuration.database_configuration['test']['database']}` /*!40100 #{default_options} */"
+      Rails::Sequel::Storage.new('test').create
     end
   end
   
   namespace :drop do
     desc 'Drops all the local databases defined in config/database.yml'
-    task :all do
-      Rails.configuration.database_configuration.each_value do |config|
-        next unless config['database']
-        database = config.delete('database')
-        DB = Sequel.connect(config)
-        puts "Dropping database #{database} if it exists"
-        DB.run "DROP DATABASE IF EXISTS `#{database}`"
-      end
+    task :all, :needs => :environment do
+      require 'sequel-rails/storage'
+      Rails::Sequel::Storage.drop_all
     end
   end
   
   desc "Create the database defined in config/database.yml for the current Rails.env - also creates the test database if Rails.env.development?"
-  task :drop do
-    connect_options = Rails.configuration.database_configuration[Rails.env]
-    connect_options.delete('database')
-    DB = Sequel.connect(connect_options)
-
-    puts "Dropping database #{Rails.configuration.database_configuration[Rails.env]['database']} if it exists"
-    DB.run "DROP DATABASE IF EXISTS `#{Rails.configuration.database_configuration[Rails.env]['database']}`"
+  task :drop, :env, :needs => :environment do |t, args|
+    args.with_defaults(:env => Rails.env)
+    
+    require 'sequel-rails/storage'
+    Rails::Sequel::Storage.new(args.env).drop
+    
+    if Rails.env.development? && Rails.configuration.database_configuration['test']
+      Rails::Sequel::Storage.new('test').drop
+    end
   end
 
   namespace :migrate do
     task :load do
-      require File.expand_path('../../sequel_migration', __FILE__)
+      require 'sequel-rails/migrations'
     end
 
     desc  'Rollbacks the database one migration and re migrate up. If you want to rollback more than one step, define STEP=x. Target specific version with VERSION=x.'
@@ -97,7 +86,7 @@ namespace :db do
     task :up => :load do
       version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
       raise "VERSION is required" unless version
-      Sequel::Migrator.run(:up, "db/migrate/", version)
+      Rails::Sequel::Migrations.migrate_up!(version)
       Rake::Task["db:schema:dump"].invoke
     end
 
@@ -105,14 +94,14 @@ namespace :db do
     task :down => :load do
       version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
       raise "VERSION is required" unless version
-      Sequel::Migrator.run(:down, "db/migrate/", version)
+      Rails::Sequel::Migrations.migrate_down!(version)
       Rake::Task["db:schema:dump"].invoke
     end
   end
   
   desc 'Migrate the database to the latest version'
   task :migrate => :'migrate:load' do
-    Sequel::Migrator.migrate("db/migrate/", ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
+    Rails::Sequel::Migrations.migrate_up!(ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
     Rake::Task["db:schema:dump"].invoke
   end
 

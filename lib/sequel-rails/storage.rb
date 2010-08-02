@@ -25,6 +25,8 @@ module Rails
       end
 
       def self.new(config)
+        config = Rails::Sequel.configuration.environments[config.to_s] unless config.kind_of?(Hash)
+        
         klass = lookup_class(config['adapter'])
         if klass.equal?(self)
           super(config)
