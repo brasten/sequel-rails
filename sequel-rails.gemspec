@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sequel-rails}
-  s.version = "0.1.3"
+  s.version = "0.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brasten Sager (brasten)"]
-  s.date = %q{2010-07-19}
+  s.date = %q{2010-08-03}
   s.description = %q{Integrate Sequel with Rails 3}
   s.email = %q{brasten@gmail.com}
   s.extra_rdoc_files = [
@@ -61,7 +61,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/brasten/sequel-rails}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.6.1}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Use Sequel with Rails 3}
   s.test_files = [
     "spec/setup_spec.rb",
@@ -72,22 +72,22 @@ Gem::Specification.new do |s|
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<sequel>, ["~> 3.11"])
-      s.add_runtime_dependency(%q<activesupport>, ["~> 3.0.0.beta3"])
-      s.add_runtime_dependency(%q<actionpack>, ["~> 3.0.0.beta3"])
-      s.add_runtime_dependency(%q<railties>, ["~> 3.0.0.beta3"])
+    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+      s.add_runtime_dependency(%q<sequel>, ["~> 3.13"])
+      s.add_runtime_dependency(%q<activesupport>, ["~> 3.0.0.rc"])
+      s.add_runtime_dependency(%q<actionpack>, ["~> 3.0.0.rc"])
+      s.add_runtime_dependency(%q<railties>, ["~> 3.0.0.rc"])
     else
-      s.add_dependency(%q<sequel>, ["~> 3.11"])
-      s.add_dependency(%q<activesupport>, ["~> 3.0.0.beta3"])
-      s.add_dependency(%q<actionpack>, ["~> 3.0.0.beta3"])
-      s.add_dependency(%q<railties>, ["~> 3.0.0.beta3"])
+      s.add_dependency(%q<sequel>, ["~> 3.13"])
+      s.add_dependency(%q<activesupport>, ["~> 3.0.0.rc"])
+      s.add_dependency(%q<actionpack>, ["~> 3.0.0.rc"])
+      s.add_dependency(%q<railties>, ["~> 3.0.0.rc"])
     end
   else
-    s.add_dependency(%q<sequel>, ["~> 3.11"])
-    s.add_dependency(%q<activesupport>, ["~> 3.0.0.beta3"])
-    s.add_dependency(%q<actionpack>, ["~> 3.0.0.beta3"])
-    s.add_dependency(%q<railties>, ["~> 3.0.0.beta3"])
+    s.add_dependency(%q<sequel>, ["~> 3.13"])
+    s.add_dependency(%q<activesupport>, ["~> 3.0.0.rc"])
+    s.add_dependency(%q<actionpack>, ["~> 3.0.0.rc"])
+    s.add_dependency(%q<railties>, ["~> 3.0.0.rc"])
   end
 end
 

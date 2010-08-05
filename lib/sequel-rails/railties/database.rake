@@ -63,7 +63,7 @@ namespace :db do
   end
 
   namespace :migrate do
-    task :load do
+    task :load => :environment do
       require 'sequel-rails/migrations'
     end
 
@@ -87,7 +87,7 @@ namespace :db do
       version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
       raise "VERSION is required" unless version
       Rails::Sequel::Migrations.migrate_up!(version)
-      Rake::Task["db:schema:dump"].invoke
+      Rake::Task["db:schema:dump"].invoke if Rails.env != 'test'
     end
 
     desc 'Runs the "down" for a given migration VERSION.'
@@ -95,28 +95,28 @@ namespace :db do
       version = ENV["VERSION"] ? ENV["VERSION"].to_i : nil
       raise "VERSION is required" unless version
       Rails::Sequel::Migrations.migrate_down!(version)
-      Rake::Task["db:schema:dump"].invoke
+      Rake::Task["db:schema:dump"].invoke if Rails.env != 'test'
     end
   end
   
   desc 'Migrate the database to the latest version'
   task :migrate => :'migrate:load' do
     Rails::Sequel::Migrations.migrate_up!(ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
-    Rake::Task["db:schema:dump"].invoke
+    Rake::Task["db:schema:dump"].invoke if Rails.env != 'test'
   end
 
   desc 'Rolls the schema back to the previous version. Specify the number of steps with STEP=n'
   task :rollback => :'migrate:load' do
     step = ENV['STEP'] ? ENV['STEP'].to_i : 1
     Sequel::Migrator.rollback('db/migrate/', step)
-    Rake::Task["db:schema:dump"].invoke
+    Rake::Task["db:schema:dump"].invoke if Rails.env != 'test'
   end
 
   desc 'Pushes the schema to the next version. Specify the number of steps with STEP=n'
   task :forward => :'migrate:load' do
     step = ENV['STEP'] ? ENV['STEP'].to_i : 1
     Sequel::Migrator.forward('db/migrate/', step)
-    Rake::Task["db:schema:dump"].invoke
+    Rake::Task["db:schema:dump"].invoke if Rails.env != 'test'
   end
   
   desc 'Load the seed data from db/seeds.rb'
@@ -132,7 +132,10 @@ namespace :db do
   task :reset => [ 'db:drop', 'db:setup' ]
   
   namespace :test do
-    task :prepare => ['db:reset']
+    task :prepare do
+      Rails.env = 'test'
+      Rake::Task['db:reset'].invoke()
+    end
   end
 end
 
