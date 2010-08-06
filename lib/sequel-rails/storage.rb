@@ -115,7 +115,7 @@ module Rails
 
       class Mysql < Storage
         def _create
-          execute("CREATE DATABASE `#{database}` DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}")
+          execute("CREATE DATABASE IF NOT EXISTS `#{database}` DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}")
         end
 
         def _drop
@@ -183,7 +183,7 @@ module Rails
         def _create
           if _is_mysql?
             ::Sequel.connect("#{_root_url}#{_params}") do |db|
-              db.execute("CREATE DATABASE `#{db_name}` DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}")
+              db.execute("CREATE DATABASE IF NOT EXISTS `#{db_name}` DEFAULT CHARACTER SET #{charset} DEFAULT COLLATE #{collation}")
             end
           end
         end
