@@ -32,8 +32,6 @@ module Rails
 
       initializer 'sequel.configuration' do |app|
         configure_sequel(app)
-        
-        Rails::Sequel.setup(Rails.env)
       end
 
       initializer 'sequel.logger' do |app|
@@ -54,6 +52,8 @@ module Rails
       # for the cascaded adapter wrappers that need to be declared before setup.
 
       config.after_initialize do |app|
+        Rails::Sequel.setup(Rails.env)
+
         ::Sequel::Model.plugin :active_model
         ::Sequel::Model.plugin :validation_helpers
 

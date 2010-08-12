@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{sequel-rails}
-  s.version = "0.1.4"
+  s.version = "0.1.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brasten Sager (brasten)"]
-  s.date = %q{2010-08-05}
+  s.date = %q{2010-08-11}
   s.description = %q{Integrate Sequel with Rails 3}
   s.email = %q{brasten@gmail.com}
   s.extra_rdoc_files = [
