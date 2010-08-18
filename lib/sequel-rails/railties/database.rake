@@ -12,7 +12,10 @@ namespace :db do
     end
     
     desc "Load a schema.rb file into the database"
-    task :load do
+    task :load, :needs => :environment do
+      require 'sequel-rails/storage'
+      Rails::Sequel::Storage.new(Rails.env).create
+      
       file = ENV['SCHEMA'] || "#{Rails.root}/db/schema.rb"
       if File.exists?(file)
         load(file)
