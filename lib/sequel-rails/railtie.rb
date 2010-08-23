@@ -47,13 +47,15 @@ module Rails
         setup_controller_runtime(app)
       end
 
+      initializer "sequel.connect" do |app|
+        Rails::Sequel.setup(Rails.env)
+      end
+
       # Run setup code after_initialize to make sure all config/initializers
       # are in effect once we setup the connection. This is especially necessary
       # for the cascaded adapter wrappers that need to be declared before setup.
 
       config.after_initialize do |app|
-        Rails::Sequel.setup(Rails.env)
-
         ::Sequel::Model.plugin :active_model
         ::Sequel::Model.plugin :validation_helpers
 

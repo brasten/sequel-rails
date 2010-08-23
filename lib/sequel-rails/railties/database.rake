@@ -138,6 +138,9 @@ namespace :db do
     task :prepare do
       Rails.env = 'test'
       Rake::Task['db:reset'].invoke()
+      Sequel::DATABASES.each do |db|
+        db.disconnect
+      end
     end
   end
 end
