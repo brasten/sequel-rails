@@ -48,7 +48,7 @@ module Rails
       end
 
       initializer "sequel.connect" do |app|
-        Rails::Sequel.setup(Rails.env)
+        Rails::Sequel.database(Rails.env)
       end
 
       # Run setup code after_initialize to make sure all config/initializers

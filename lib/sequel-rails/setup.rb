@@ -8,12 +8,15 @@ require 'sequel-rails/railties/benchmarking_mixin'
 
 module Rails
   module Sequel
-
+    @databases = {}
+	
     def self.setup(environment)
-      puts "[sequel] Setting up the #{environment.inspect} environment:"
-
-      ::Sequel.connect({:logger => configuration.logger}.merge(::Rails::Sequel.configuration.environment_for(environment.to_s)))
+      config = ::Rails::Sequel.configuration.environment_for(environment.to_s)
+      ::Sequel.connect({:logger => configuration.logger}.merge(config))
     end
-
+	
+    def self.database(name)
+      @databases[name] ||= setup(name)
+    end
   end
 end
