@@ -51,7 +51,7 @@ Once you do that, you will see the following rake tasks among others. These are 
 
 == Supporting Multiple Databases
 
-sequel-rails supports the use of more than one database per environment across your models.
+Sequel and sequel-rails support the use of more than one database per environment across your models.
 Currently, additional databases can be entered at the top level of your database.yml:
 
   ...
@@ -84,15 +84,13 @@ Currently, additional databases can be entered at the top level of your database
     host: localhost
   ...
 
-You can then set this database for a model using the following syntax:
+You can then set an extra database for a model using the following syntax:
 
-  ...
   class Foo < Sequel::Model(Rails::Sequel.database(:extra))
-
+  
   end
-  ...
 
-Databases are only connected to once are defined in a Sequel::Model.
+Databases are only connected to once they are defined for a Sequel::Model
 
 == Current Issues
 
