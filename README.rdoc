@@ -49,6 +49,50 @@ Once you do that, you will see the following rake tasks among others. These are 
   vendor/bin/rake db:setup                 # Create the database, load the schema, and initialize with the seed data
   ...
 
+== Supporting Multiple Databases
+
+sequel-rails supports the use of more than one database per environment across your models.
+Currently, additional databases can be entered at the top level of your database.yml:
+
+  ...
+  development:
+    adapter: mysql
+    database: development
+    username: username
+    password: password
+    host: localhost
+
+  test:
+    adapter: mysql
+    database: test
+    username: username
+    password: password
+    host: localhost
+
+  production:
+    adapter: mysql
+    database: production
+    username: username
+    password: password
+    host: localhost
+
+  extra:
+    adapter: mysql
+    database: extra
+    username: username
+    password: password
+    host: localhost
+  ...
+
+You can then set this database for a model using the following syntax:
+
+  ...
+  class Foo < Sequel::Model(Rails::Sequel.database(:extra))
+
+  end
+  ...
+
+Databases are only connected to once are defined in a Sequel::Model.
 
 == Current Issues
 
