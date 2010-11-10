@@ -40,6 +40,8 @@ module Rails
           config[key.to_s] = 
             if key.to_s == 'port'
               value.to_i
+            elsif key.to_s == 'adapter' && value == 'postgresql'
+              'postgres'
             elsif key.to_s == 'adapter' && value == 'sqlite3'
               'sqlite'
             elsif key.to_s == 'database' && (hash['adapter'] == 'sqlite3' || 
