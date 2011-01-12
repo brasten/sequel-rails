@@ -10,12 +10,12 @@ namespace :db do
       end
       Rake::Task["db:schema:dump"].reenable
     end
-    
+
     desc "Load a schema.rb file into the database"
     task :load, :needs => :environment do
       require 'sequel-rails/storage'
       Rails::Sequel::Storage.new(Rails.env).create
-      
+
       file = ENV['SCHEMA'] || "#{Rails.root}/db/schema.rb"
       if File.exists?(file)
         load(file)
@@ -36,15 +36,15 @@ namespace :db do
   desc "Create the database defined in config/database.yml for the current Rails.env - also creates the test database if Rails.env.development?"
   task :create, :env, :needs => :environment do |t, args|
     args.with_defaults(:env => Rails.env)
-    
+
     require 'sequel-rails/storage'
     Rails::Sequel::Storage.new(args.env).create
-    
+
     if Rails.env.development? && Rails.configuration.database_configuration['test']
       Rails::Sequel::Storage.new('test').create
     end
   end
-  
+
   namespace :drop do
     desc 'Drops all the local databases defined in config/database.yml'
     task :all, :needs => :environment do
@@ -52,14 +52,14 @@ namespace :db do
       Rails::Sequel::Storage.drop_all
     end
   end
-  
+
   desc "Create the database defined in config/database.yml for the current Rails.env - also creates the test database if Rails.env.development?"
   task :drop, :env, :needs => :environment do |t, args|
     args.with_defaults(:env => Rails.env)
-    
+
     require 'sequel-rails/storage'
     Rails::Sequel::Storage.new(args.env).drop
-    
+
     if Rails.env.development? && Rails.configuration.database_configuration['test']
       Rails::Sequel::Storage.new('test').drop
     end
@@ -101,7 +101,7 @@ namespace :db do
       Rake::Task["db:schema:dump"].invoke if Rails.env != 'test'
     end
   end
-  
+
   desc 'Migrate the database to the latest version'
   task :migrate => :'migrate:load' do
     Rails::Sequel::Migrations.migrate_up!(ENV["VERSION"] ? ENV["VERSION"].to_i : nil)
@@ -121,19 +121,19 @@ namespace :db do
     Sequel::Migrator.forward('db/migrate/', step)
     Rake::Task["db:schema:dump"].invoke if Rails.env != 'test'
   end
-  
+
   desc 'Load the seed data from db/seeds.rb'
   task :seed => :environment do
     seed_file = File.join(Rails.root, 'db', 'seeds.rb')
     load(seed_file) if File.exist?(seed_file)
   end
-  
+
   desc 'Create the database, load the schema, and initialize with the seed data'
   task :setup => [ 'db:create', 'db:migrate', 'db:seed' ]
-  
+
   desc 'Drops and recreates the database from db/schema.rb for the current environment and loads the seeds.'
   task :reset => [ 'db:drop', 'db:setup' ]
-  
+
   namespace :test do
     task :prepare do
       Rails.env = 'test'
@@ -141,6 +141,24 @@ namespace :db do
       Sequel::DATABASES.each do |db|
         db.disconnect
       end
+    end
+  end
+
+  namespace :sessions do
+    desc "Creates the sessions table for SequelStore"
+    task :create => :environment do
+      require 'sequel-rails/session_store'
+      Rails::Sequel::SessionStore::Session.auto_migrate!
+      database = Rails::Sequel.configuration.environments[Rails.env]['database']
+      puts "Created '#{database}.sessions'"
+    end
+
+    desc "Clear the sessions table for SequelStore"
+    task :clear => :environment do
+      require 'sequel-rails/session_store'
+      Rails::Sequel::SessionStore::Session.delete
+      database = Rails::Sequel.configuration.environments[Rails.env]['database']
+      puts "Deleted entries from '#{database}.sessions'"
     end
   end
 end
