@@ -47,17 +47,21 @@ module Rails
         end
 
         def data
-          self[:data] ||= self.class.unmarshal(self[:data]) || {}
+          @data ||= self.class.unmarshal(self[:data]) || {}
         end
 
         def marshal_data!
-          return false unless self[:data]
+          return false unless @data
           self[:data] = self.class.marshal(data)
         end
 
         def before_save
           marshal_data!
           super
+        end
+
+        def loaded?
+          @data
         end
       end
 
@@ -79,7 +83,7 @@ module Rails
         session            = get_session_resource(env, sid)
         session.data       = session_data
         session.updated_at = Time.now if session.modified?
-        session.save
+        session.save ? sid : false
       end
 
       def get_session_resource(env, sid)
