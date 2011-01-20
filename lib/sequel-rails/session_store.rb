@@ -49,6 +49,7 @@ module Rails
         def data
           @data ||= self.class.unmarshal(self[:data]) || {}
         end
+        attr_writer :data
 
         def marshal_data!
           return false unless @data
