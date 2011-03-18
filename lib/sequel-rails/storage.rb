@@ -26,7 +26,7 @@ module Rails
 
       def self.new(config)
         config = Rails::Sequel.configuration.environments[config.to_s] unless config.kind_of?(Hash)
-        
+
         klass = lookup_class(config['adapter'])
         if klass.equal?(self)
           super(config)
@@ -86,6 +86,18 @@ module Rails
         @password ||= config['password'] || ''
       end
 
+      def host
+        @host ||= config['host'] || ''
+      end
+
+      def port
+        @port ||= config['port'] || ''
+      end
+
+      def owner
+        @owner ||= config['owner'] || ''
+      end
+
       def charset
         @charset ||= config['charset'] || ENV['CHARSET'] || 'utf8'
       end
@@ -129,6 +141,7 @@ module Rails
             'mysql',
             (username.blank? ? '' : "--user=#{username}"),
             (password.blank? ? '' : "--password=#{password}"),
+            (host.blank? ? '' : "--host=#{host}"),
             '-e',
             statement
           )
@@ -141,13 +154,17 @@ module Rails
       end
 
       class Postgres < Storage
+
         def _create
           system(
             'createdb',
-            '-E',
+            '--encoding',
             charset,
-            '-U',
+            '--username',
             username,
+            (owner.blank? ? '' : "--owner=#{owner}"),
+            (port.blank? ? '' : "--port=#{port}"),
+            (host.blank? ? '' : "--host=#{host}"),
             database
           )
         end
@@ -155,31 +172,33 @@ module Rails
         def _drop
           system(
             'dropdb',
-            '-U',
+            '--username',
             username,
+            (port.blank? ? '' : "--port=#{port}"),
+            (host.blank? ? '' : "--host=#{host}"),
             database
           )
         end
       end
-      
+
       class Jdbc < Storage
-        
+
         def _is_mysql?
           database.match(/^jdbc:mysql/)
         end
-        
+
         def _root_url
           database.scan /^jdbc:mysql:\/\/\w*:?\d*/
         end
-        
+
         def db_name
           database.scan(/^jdbc:mysql:\/\/\w+:?\d*\/(\w+)/).flatten.first
         end
-        
+
         def _params
           database.scan /\?.*$/
         end
-        
+
         def _create
           if _is_mysql?
             ::Sequel.connect("#{_root_url}#{_params}") do |db|
@@ -195,16 +214,16 @@ module Rails
             end
           end
         end
-        
+
         private
-        
+
         def collation
           @collation ||= config['collation'] || ENV['COLLATION'] || 'utf8_unicode_ci'
         end
-        
-        
+
+
       end
-      
+
     end
   end
 end
