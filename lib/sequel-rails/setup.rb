@@ -12,7 +12,7 @@ module Rails
     def self.setup(environment)
       puts "[sequel] Setting up the #{environment.inspect} environment:"
 
-      ::Sequel.connect({:logger => configuration.logger}.merge(::Rails::Sequel.configuration.environment_for(environment.to_s)))
+      ::Sequel.connect({:logger => configuration.logger, :sql_log_level => :debug}.merge(::Rails::Sequel.configuration.environment_for(environment.to_s)))
     end
 
   end
