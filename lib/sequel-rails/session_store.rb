@@ -101,6 +101,10 @@ module Rails
         klass.where(:session_id => sid).first || klass.new(:session_id => sid)
       end
 
+      def destroy(env)
+        find_session(current_session_id(env)).destroy
+      end
+
     end
 
   end
