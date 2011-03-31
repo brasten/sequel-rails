@@ -16,9 +16,9 @@ begin
 
     gem.add_dependency 'sequel',           '~> 3.13'
 
-    gem.add_dependency 'activesupport',     '~> 3.0.0.rc'
-    gem.add_dependency 'actionpack',        '~> 3.0.0.rc'
-    gem.add_dependency 'railties',          '~> 3.0.0.rc'
+    gem.add_dependency 'activesupport',     '~> 3.0.0'
+    gem.add_dependency 'actionpack',        '~> 3.0.0'
+    gem.add_dependency 'railties',          '~> 3.0.0'
 
     # gem.add_development_dependency 'yard',  '~> 0.5'
 
