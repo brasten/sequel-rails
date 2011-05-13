@@ -138,10 +138,9 @@ namespace :db do
   task :force_close_open_connections => :environment do
     if Rails.env.test?
        db_config = Rails.configuration.database_configuration[Rails.env].symbolize_keys
-
        begin
          #Will only work on Postgres > 8.4
-         db_adapter.execute <<-SQL.gsub(/^\s{9}/,'')
+         Sequel::Model.db.execute <<-SQL.gsub(/^\s{9}/,'')
          SELECT COUNT(pg_terminate_backend(procpid))
          FROM  pg_stat_activity
          WHERE datname = '#{db_config[:database]}';
