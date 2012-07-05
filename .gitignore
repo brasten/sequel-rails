@@ -27,3 +27,6 @@ vendor
 .bundle
 .rvmrc
 *.gem
+
+## Rubymine
+.idea
