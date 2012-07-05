@@ -11,17 +11,19 @@ Using sequel with rails3 requires a couple minor changes.
 First, add the following to your Gemfile:
 
   gem 'sequel-rails'
-  
+
 ... be sure to run "bundle install" if needed!
 
 Secondly, you'll need to require "sequel-rails/railtie" in your config/application.rb file, and not require activerecord.  The top of your config/application.rb will probably look something like:
-  
+
   # require 'rails/all'
-  
+
   # Instead of 'rails/all', require these:
   require "action_controller/railtie"
   require "sequel-rails/railtie"
   require "action_mailer/railtie"
+  require "active_resource/railtie"
+  require "rails/test_unit/railtie"
 
 
 After those changes, you should be good to go!
